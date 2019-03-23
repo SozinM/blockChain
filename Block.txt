@@ -1,0 +1,24 @@
+Block:
+Структура данных блока
+публичные
+
+index()
+prevHash()
+data()
+noonce()
+
+setIndex()
+setPrevHash()
+setData()
+setNoonce()
+
+hash() - возвращает хэш текущего блока 
+формат хэша - QString("%1%2%3%4").arg(m_index).arg(m_data).arg(m_prevHash).arg(m_nonce)
+hash(int nonce) - хэш блока с определённым nonce
+формат хэша - QString("%1%2%3%4").arg(m_index).arg(m_data).arg(m_prevHash).arg(nonce)
+
+приватные:
+int m_index
+QByteArray m_prevHash
+QByteArray(QVariant) m_data
+int m_nonce
