@@ -2,7 +2,7 @@ Block:
 Структура данных блока
 публичные
 
-index()
+getindex()
 prevHash()
 data()
 noonce()
