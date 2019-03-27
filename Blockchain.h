@@ -13,6 +13,7 @@ public:
     int size() const;
     Block genericBlock() const;
     int lastBlockIndex() const;
+    QByteArray lastBlockHash() const;
     Block lastBlock() const;
     Block blockAt(int index) const;
     void append(const Block &block);

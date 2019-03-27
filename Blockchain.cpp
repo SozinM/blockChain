@@ -40,6 +40,11 @@ Block Blockchain::genericBlock() const
     return m_blockChain.value(genericBlock);
 }
 
+QByteArray Blockchain::lastBlockHash() const
+{
+    return m_blockChain.value(m_lastIndex).hash();
+}
+
 Block Blockchain::lastBlock() const
 {
     return m_blockChain.value(m_lastIndex);
@@ -53,11 +58,16 @@ Block Blockchain::blockAt(int index) const
 void Blockchain::append(const Block &block)
 {
     //checkBlock фнукция проверки блока на удовлетворение условиям
-    m_lastIndex = block.index();
     if(!m_blockChain.contains(block.index()))
     {
-        m_blockChain.insert(block.index(),block);
+        //проверка что предыдущий хэш нового блока совпадает с хэшем последнего блока
+        if (lastBlockHash() == block.prevHash())
+        {
+          m_blockChain.insert(block.index(),block);
+        }
+
     }
+    m_lastIndex = block.index();
 }
 
 void Blockchain::setDifficulty(int difficulty)

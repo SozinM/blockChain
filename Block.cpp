@@ -1,4 +1,6 @@
 #include "Block.h"
+#include <QCryptographicHash>
+#include <QString>
 
 Block::Block(int index, QByteArray prevHash, QVariant data, int nonce)
 {
@@ -60,11 +62,22 @@ void Block::setPrevHash(const QByteArray &prevHash)
 QByteArray Block::hash() const
 {
 //    строка для хэширования
-//    QString("%1%2%3%4").arg(m_index).arg(m_data).arg(m_prevHash).arg(m_nonce);
+    QString preHash = QString ("%1%2%3%4").arg(m_index)
+                        .arg(QString::fromStdString(m_prevHash.toStdString()))
+                        .arg(m_data.toString())
+                        .arg(m_nonce);
+
+    return QCryptographicHash::hash(QByteArray::fromStdString(preHash.toStdString()),
+                                    QCryptographicHash::Sha256).toHex();
 }
 
 QByteArray Block::hash(int nonce) const
 {
-//    строка для хэширования
-//    QString("%1%2%3%4").arg(m_index).arg(m_data).arg(m_prevHash).arg(nonce)
+    QString preHash = QString ("%1%2%3%4").arg(m_index)
+                        .arg(QString::fromStdString(m_prevHash.toStdString()))
+                        .arg(m_data.toString())
+                        .arg(nonce);
+
+    return QCryptographicHash::hash(QByteArray::fromStdString(preHash.toStdString()),
+                                    QCryptographicHash::Sha256).toHex();
 }

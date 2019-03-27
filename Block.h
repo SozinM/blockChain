@@ -26,6 +26,8 @@ public:
 
     QByteArray hash() const;
     QByteArray hash(int nonce) const;
+    QByteArray header() const;
+    QString toString() const;
 
 private:
     int m_index;
