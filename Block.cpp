@@ -81,3 +81,14 @@ QByteArray Block::hash(int nonce) const
     return QCryptographicHash::hash(QByteArray::fromStdString(preHash.toStdString()),
                                     QCryptographicHash::Sha256).toHex();
 }
+
+QByteArray Block::toByteArray() const
+{
+    QByteArray blockAsByteArray;
+    blockAsByteArray.setNum(m_index);
+    blockAsByteArray.append(m_prevHash);
+    blockAsByteArray.append(m_data.toByteArray());
+    blockAsByteArray.append(QByteArray::number(m_nonce));
+
+    return  blockAsByteArray;
+}

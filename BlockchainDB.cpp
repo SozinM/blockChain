@@ -18,23 +18,19 @@ bool BlockchainDB::loadBlockchain(Blockchain &blockchain)
         return false;
     }
     QSqlQuery query;
-    Q_ASSERT(query.driver()->hasFeature(QSqlDriver::NamedPlaceholders));
-
     if (!query.exec("SELECT * FROM blockchain"))
     {
         //для тестирования
         qDebug() << query.lastError().text();
         return  false;
     }
-    int loadedBlockIndex = 0;
     while(query.next())
     {
         const Block block(query.value(0).toInt(),query.value(1).toByteArray(),
                           query.value(2).toByteArray(),query.value(3).toInt());
         blockchain.append(block);
-        ++loadedBlockIndex;
     }
-    m_lastLoadedBlockIndex = loadedBlockIndex;
+
     return true;
 }
 
@@ -42,11 +38,11 @@ bool BlockchainDB::saveBlockchain(const Blockchain &blockchain) const
 {
     QSqlQuery query;
     Q_ASSERT(query.driver()->hasFeature(QSqlDriver::NamedPlaceholders));
-    for (int i = m_lastLoadedBlockIndex; i < blockchain.size(); ++i)
+    for (int i = 0; i < blockchain.size(); ++i)
     {
        const Block block = blockchain.blockAt(i);
        query.prepare("INSERT INTO blockchain "
-                     "VALUES(:index, :prevHash, :data, :timestamp, :nonce, :currHash)");
+                     "VALUES(:index, :prevHash, :data, :nonce)");
        query.bindValue(":index", block.index());
        query.bindValue(":prevHash", block.prevHash());
        query.bindValue(":data", block.data().toByteArray());

@@ -12,11 +12,6 @@ public:
 /*возможно нужен не bool*/bool loadBlockchain(Blockchain &blockchain);
     bool saveBlockchain(const Blockchain &blockchain) const;
 private:
-/*
- * запоминаем сколько записей (то есть блоков) загружено из ДБ
- * чтобы потом не сохранять всю цепочку с начала а только недостающие блоки
- */
-    int m_lastLoadedBlockIndex;
     QSqlDatabase m_db;
 };
 

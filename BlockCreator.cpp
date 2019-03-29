@@ -42,5 +42,6 @@ Block BlockCreator::createBlock(int index, QByteArray prevHash, QVariant data)
         candidateBlock.setNonce(++candidateNonce);
     }
 
+    emit createdBlock(candidateBlock);
     return candidateBlock;
 }
