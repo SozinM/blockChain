@@ -29,6 +29,7 @@ public:
     QByteArray header() const;
     QString toString() const;
     QByteArray toByteArray() const;
+    static const Block fromByteArray(const QByteArray &byteArray);
 
 private:
     int m_index;

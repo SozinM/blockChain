@@ -92,3 +92,19 @@ QByteArray Block::toByteArray() const
 
     return  blockAsByteArray;
 }
+
+const Block Block::fromByteArray(const QByteArray &byteArray)
+{
+    Block block;
+    int offset = 0;
+    block.setIndex(byteArray.mid(offset, sizeof(int)).toInt());
+    offset += sizeof(int);
+    block.setPrevHash(byteArray.mid(offset,
+                      QCryptographicHash::hashLength(QCryptographicHash::Sha256)));
+    offset += QCryptographicHash::hashLength(QCryptographicHash::Sha256);
+    block.setNonce(byteArray.mid(offset,sizeof(int)).toInt());
+    offset += sizeof(int);
+    block.setData(byteArray.mid(offset,byteArray.size()-offset));
+
+    return block;
+}
