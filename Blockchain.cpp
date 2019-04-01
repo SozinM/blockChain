@@ -45,6 +45,21 @@ QByteArray Blockchain::lastBlockHash() const
     return m_blockChain.value(m_lastIndex).hash();
 }
 
+QByteArray Blockchain::lastBlockPrevHash() const
+{
+    return m_blockChain.value(m_lastIndex).prevHash();
+}
+
+int Blockchain::lastBlockNonce() const
+{
+    return m_blockChain.value(m_lastIndex).nonce();
+}
+
+QVariant Blockchain::lastBlockData() const
+{
+    return m_blockChain.value(m_lastIndex).data();
+}
+
 Block Blockchain::lastBlock() const
 {
     return m_blockChain.value(m_lastIndex);

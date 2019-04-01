@@ -42,7 +42,7 @@ void Node::readBroadcastDatagram()
         if (m_broadSock.readDatagram(datagram.data(), datagram.size(),
                                      &senderIp, &senderPort) != -1)
         {
-           if (senderPort != m_broadPort)
+           if (senderIp != m_ipAddress)
            {
                 processRequest(datagram,senderIp);
            }
@@ -50,11 +50,11 @@ void Node::readBroadcastDatagram()
      }
 }
 
-void Node::requestSynchronization(int chainSize)
+void Node::requestSynchronization()
 {
     QByteArray datagram;
     datagram.append(REQSYN);
-    datagram.append(QByteArray::number(chainSize));
+    datagram.append(QByteArray::number(blockchain.size()));
     sendBroadcastDatagram(datagram);
 }
 

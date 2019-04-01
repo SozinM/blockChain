@@ -9,8 +9,8 @@
 #include "Block.h"
 #include "Blockchain.h"
 
-const quint16 DEFAULT_BROADCAST_PORT = 555; //magic num :)
-const quint16 DEFAULT_DIRECT_PORT = 556;
+const quint16 DEFAULT_BROADCAST_PORT = 36000; //magic num :)
+const quint16 DEFAULT_DIRECT_PORT = 36001;
 
 class Node: public QObject
 {
@@ -21,7 +21,7 @@ public:
          quint16 directPort = DEFAULT_DIRECT_PORT);
     void setNetParams(const QString &ipAddr, quint16 broadcastPort = DEFAULT_BROADCAST_PORT,
                       quint16 directPort = DEFAULT_DIRECT_PORT);
-    void requestSynchronization(int chainSize);//запросить синхронизацию, передаем свою длину цепочки
+    void requestSynchronization();//запросить синхронизацию, передаем свою длину цепочки
 //хосты получившие запрос проверят длину цепочки. Если у них цепочка длинее - то они отвечают, что могут
 //синхронизировать
 //Почему слоты приватные? По задумке они должны активироваться по сигналу, поэтому запрещено вызывать
@@ -40,6 +40,7 @@ private:
     quint16 m_directPort;
     QHostAddress m_ipAddress; // ip адресс узла
 
+public: //Блокчейн публичная штука
     Blockchain blockchain;
 };
 
