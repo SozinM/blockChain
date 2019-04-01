@@ -20,7 +20,7 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-
+    void updateTable();
 private:
     Ui::MainWindow *ui;
     Blockchain blockchain;
