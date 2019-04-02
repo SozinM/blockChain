@@ -21,7 +21,7 @@ public:
     int difficulty() const;
 
 private:
-    QHash<int,Block> m_blockChain;
+    QHash<int,Block> blockchain;
     int m_difficulty;
     int m_lastIndex;
 

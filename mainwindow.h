@@ -2,9 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <../GitHub/blockChain/Blockchain.h>
-#include <../GitHub/blockChain/BlockCreator.h>
-#include <../GitHub/blockChain/Node.h>
+#include <Blockchain.h>
+#include <BlockCreator.h>
+#include <Node.h>
 
 namespace Ui {
 class MainWindow;

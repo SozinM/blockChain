@@ -26,7 +26,7 @@ Blockchain::~Blockchain()
 
 int Blockchain::size() const
 {
-    return m_blockChain.size();
+    return blockchain.size();
 }
 
 int Blockchain::lastBlockIndex() const
@@ -37,33 +37,33 @@ int Blockchain::lastBlockIndex() const
 Block Blockchain::genericBlock() const
 {
     int genericBlock = 0;
-    return m_blockChain.value(genericBlock);
+    return blockchain.value(genericBlock);
 }
 
 QByteArray Blockchain::lastBlockHash() const
 {
-    return m_blockChain.value(m_lastIndex).hash();
+    return blockchain.value(m_lastIndex).hash();
 }
 
 Block Blockchain::lastBlock() const
 {
-    return m_blockChain.value(m_lastIndex);
+    return blockchain.value(m_lastIndex);
 }
 
 Block Blockchain::blockAt(int index) const
 {
-    return m_blockChain.value(index);
+    return blockchain.value(index);
 }
 //Добавляет блок по индексу
 void Blockchain::append(const Block &block)
 {
     //checkBlock фнукция проверки блока на удовлетворение условиям
-    if(!m_blockChain.contains(block.index()))
+    if(!blockchain.contains(block.index()))
     {
         //проверка что предыдущий хэш нового блока совпадает с хэшем последнего блока
         if (lastBlockHash() == block.prevHash())
         {
-          m_blockChain.insert(block.index(),block);
+          blockchain.insert(block.index(),block);
         }
 
     }

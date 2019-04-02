@@ -11,15 +11,19 @@ MainWindow::MainWindow(QWidget *parent) :
     //настраиваем таблицу
     ui->tableWidget->setColumnCount(4);
     ui->tableWidget->verticalHeader()->setVisible(false);
+
     QStringList tableLabels;
     tableLabels << "Index" << "Previous HASH" <<  "Nonce" << "Data";
-    //
     ui->tableWidget->setHorizontalHeaderLabels(tableLabels);
+
+    //Может лучше в отдельный поток, который будет централизированно управлять моделью tableView?
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateTable()));
     timer->start(5000);
+
     connect(&creator,SIGNAL(createdBlock(const Block)),&node,SLOT(anonce(const Block)));
-    node.requestSynchronization();
+    //Сомнительно, что тут должно сразу идти это
+    node.requestSynchronization(1);
 }
 
 MainWindow::~MainWindow()
@@ -40,11 +44,13 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::updateTable()
 {
     int i = ui->tableWidget->rowCount();
-    if (node.blockchain.lastBlockIndex() == i)
+
+    if (node.blockchain.lastBlockIndex() <= i)
         return;
+    //Сделать цикл, там может быть не один новый блок
     ui->tableWidget->insertRow(i);
     ui->tableWidget->setItem(i,0, new QTableWidgetItem(QString::number(node.blockchain.lastBlockIndex())));
-    ui->tableWidget->setItem(i,1, new QTableWidgetItem(QString::fromStdString(node.blockchain.lastBlockPrevHash().toStdString())));
-    ui->tableWidget->setItem(i,2, new QTableWidgetItem(QString::number(node.blockchain.lastBlockNonce())));
-    ui->tableWidget->setItem(i,3, new QTableWidgetItem(node.blockchain.lastBlockData().toString()));
+    ui->tableWidget->setItem(i,1, new QTableWidgetItem(QString::fromStdString(node.blockchain.lastBlock().prevHash().toStdString())));
+    ui->tableWidget->setItem(i,2, new QTableWidgetItem(QString::number(node.blockchain.lastBlock().nonce())));
+    ui->tableWidget->setItem(i,3, new QTableWidgetItem(node.blockchain.lastBlock().data().toString()));
 }

@@ -26,6 +26,7 @@ public:
 //синхронизировать
 //Почему слоты приватные? По задумке они должны активироваться по сигналу, поэтому запрещено вызывать
 // их самостоятельно
+    Blockchain blockchain;
 private slots:
     void anonce(const Block &block);//анонс нового блока, привязывается к сигналу createdBlock
     void sendBroadcastDatagram(const QByteArray &datagram);
@@ -40,7 +41,7 @@ private:
     quint16 m_directPort;
     QHostAddress m_ipAddress; // ip адресс узла
 
-    Blockchain blockchain;
+
 };
 
 
