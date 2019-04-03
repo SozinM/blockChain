@@ -36,12 +36,11 @@ int BlockCreator::hashDifficulty(const QByteArray &hash)
 Block BlockCreator::createBlock(int index, QByteArray prevHash, QVariant data)
 {
     Block candidateBlock(index,prevHash,data);
-    int candidateNonce = 0;
-    //пытаемся создать блок пока его хэш не будет удовлетворять заданной сложности
-    ///TODO: тут, думаю, надо сменить с ++ на случайное число
+    srand(time(NULL));
+
     while (hashDifficulty(candidateBlock.hash()) != m_difficulty)
     {
-        candidateBlock.setNonce(++candidateNonce);
+        candidateBlock.setNonce(rand());
     }
 
     emit createdBlock(candidateBlock);
