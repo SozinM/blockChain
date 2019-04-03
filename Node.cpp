@@ -69,14 +69,14 @@ void Node::processRequest(const QByteArray &datagram, const QHostAddress &sender
 {
     QByteArray msgType = datagram.mid(0, MSG_TYPE_SIZE);
     //если пришел анонс - то добавляем блок в блокчейн
-    if (msgType.compare(ANONCE) == 0)
+    if (msgType == ANONCE)
     {
         const Block block = Block::fromByteArray(datagram.mid(MSG_TYPE_SIZE,datagram.size()));
         blockchain.append(block);
     }
     //если кому-то требуется синхронизация - то проверяем длину своей локлаьной цепочки
     //и если локальная цепочка длинее - то отправляем сообщение о готовности синхронизировать
-    else if (msgType.compare(REQSYN) == 0)
+    else if (msgType == REQSYN)
     {
         int remoteBlockchainSize = datagram.mid(MSG_TYPE_SIZE, sizeof (int)).toInt();
         if (blockchain.size() > remoteBlockchainSize)
@@ -88,7 +88,7 @@ void Node::processRequest(const QByteArray &datagram, const QHostAddress &sender
     }
     //если пришло сообщение, что кто-то готов синхронизировать наш узел
     //то создаем tcp соединение с этим узлом
-    else if (msgType.compare(CANSYN) == 0)
+    else if (msgType == CANSYN)
     {
         m_directSock.connectToHost(sender, m_directPort);
     }
@@ -97,7 +97,7 @@ void Node::processRequest(const QByteArray &datagram, const QHostAddress &sender
 void Node::readDirectDatagram()
 {
     QByteArray datagram = m_directSock.readAll();
-    if (datagram.mid(0,MSG_TYPE_SIZE).compare(SYNFIN) == 0)
+    if (datagram.mid(0,MSG_TYPE_SIZE) == SYNFIN)
     {
         m_directSock.disconnectFromHost();
     }
