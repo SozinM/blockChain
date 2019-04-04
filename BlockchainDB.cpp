@@ -26,8 +26,12 @@ bool BlockchainDB::loadBlockchain(Blockchain &blockchain)
     }
     while(query.next())
     {
-        const Block block(query.value(0).toInt(),query.value(1).toByteArray(),
-                          query.value(2).toByteArray(),query.value(3).toInt());
+        //Так станет гораздо понятнее
+        int index = query.value(0).toInt();
+        QByteArray prevHash = query.value(1).toByteArray();
+        QVariant data = query.value(2);
+        int nonce = query.value(3).toInt();
+        Block block(index, prevHash,data,nonce);
         blockchain.append(block);
     }
 
@@ -40,7 +44,7 @@ bool BlockchainDB::saveBlockchain(const Blockchain &blockchain) const
     Q_ASSERT(query.driver()->hasFeature(QSqlDriver::NamedPlaceholders));
     for (int i = 0; i < blockchain.size(); ++i)
     {
-       const Block block = blockchain.blockAt(i);
+       Block block = blockchain.blockAt(i);
        query.prepare("INSERT INTO blockchain "
                      "VALUES(:index, :prevHash, :data, :nonce)");
        query.bindValue(":index", block.index());

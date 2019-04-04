@@ -2,9 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <../GitHub/blockChain/Blockchain.h>
-#include <../GitHub/blockChain/BlockCreator.h>
-#include <../GitHub/blockChain/Node.h>
+#include <Blockchain.h>
+#include <BlockCreator.h>
+#include <Node.h>
+#include <QStandardItemModel>
 
 namespace Ui {
 class MainWindow;
@@ -17,15 +18,19 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
+    void setupUI();
+public slots:
+    void updateTable();
 private slots:
-    void on_pushButton_clicked();
+    void pbMine_clicked();
 
 private:
     Ui::MainWindow *ui;
     Blockchain blockchain;
     BlockCreator creator;
     Node node;
+
+    QStandardItemModel *tbvBlockchainModel;
 };
 
 #endif // MAINWINDOW_H

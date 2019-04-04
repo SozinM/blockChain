@@ -27,21 +27,20 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    ../GitHub/blockChain/Block.cpp \
-    ../GitHub/blockChain/Blockchain.cpp \
-    ../GitHub/blockChain/BlockCreator.cpp \
-    ../GitHub/blockChain/BlockchainDB.cpp \
-    ../GitHub/blockChain/Node.cpp
+    Block.cpp \
+    Blockchain.cpp \
+    BlockCreator.cpp \
+    BlockchainDB.cpp \
+    Node.cpp
 
 HEADERS += \
         mainwindow.h \
-    ../GitHub/blockChain/Block.h \
-    ../GitHub/blockChain/Blockchain.h \
-    ../GitHub/blockChain/BlockCreator.h \
-    C:\Users\Yegor\Documents\GitHub\blockChain \
-    ../GitHub/blockChain/BlockchainDB.h \
-    ../GitHub/blockChain/Node.h \
-    ../GitHub/blockChain/Protocol.h
+    Block.h \
+    Blockchain.h \
+    BlockCreator.h \
+    BlockchainDB.h \
+    Node.h \
+    Protocol.h
 
 FORMS += \
         mainwindow.ui
