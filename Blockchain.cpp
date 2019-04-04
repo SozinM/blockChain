@@ -45,6 +45,21 @@ QByteArray Blockchain::lastBlockHash() const
     return m_blockChain.value(m_lastIndex).hash();
 }
 
+QByteArray Blockchain::lastBlockPrevHash() const
+{
+    return m_blockChain.value(m_lastIndex).prevHash();
+}
+
+QVariant Blockchain::lastBlockData() const
+{
+    return m_blockChain.value(m_lastIndex).data();
+}
+
+int Blockchain::lastBlockNonce() const
+{
+    return m_blockChain.value(m_lastIndex).nonce();
+}
+
 Block Blockchain::lastBlock() const
 {
     return m_blockChain.value(m_lastIndex);
@@ -64,10 +79,11 @@ void Blockchain::append(const Block &block)
         if (lastBlockHash() == block.prevHash())
         {
           m_blockChain.insert(block.index(),block);
+          m_lastIndex = block.index();
         }
 
     }
-    m_lastIndex = block.index();
+
 }
 
 void Blockchain::setDifficulty(int difficulty)

@@ -14,6 +14,9 @@ public:
     Block genericBlock() const;
     int lastBlockIndex() const;
     QByteArray lastBlockHash() const;
+    QByteArray lastBlockPrevHash() const;
+    QVariant lastBlockData() const;
+    int lastBlockNonce() const;
     Block lastBlock() const;
     Block blockAt(int index) const;
     void append(const Block &block);
