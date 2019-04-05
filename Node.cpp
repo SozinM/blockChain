@@ -1,20 +1,22 @@
 #include "Node.h"
+#include <QTimer>
 
-Node::Node()
+Node::Node():
+     m_srv("server", QWebSocketServer::NonSecureMode, this)
 {
     connect(&m_broadSock,SIGNAL(readyRead()),this,SLOT(readBroadcastDatagram()));
-    connect(&m_directSock,SIGNAL(readyRead()),this,SLOT(readDirectDatagram()));
 }
 
-Node::Node(const QString &ipAddr, quint16 broadcastPort, quint16 directPort)
+Node::Node(const QString &ipAddr, quint16 broadcastPort, quint16 directPort):
+    m_srv("server", QWebSocketServer::NonSecureMode, this)
 {
     m_ipAddress = QHostAddress(ipAddr);
     m_broadPort = broadcastPort;
     m_broadSock.bind(m_ipAddress, m_broadPort);
     m_directPort = directPort;
-    m_directSock.bind(m_ipAddress,m_directPort);
     connect(&m_broadSock,SIGNAL(readyRead()),this,SLOT(readBroadcastDatagram()));
-    connect(&m_directSock,SIGNAL(readyRead()),this,SLOT(readDirectDatagram()));
+    connect(&m_srv, SIGNAL(newConnection()),this,SLOT(onNewConnection()));
+
 }
 
 void Node::setNetParams(const QString &ipAddr, quint16 broadcastPort, quint16 directPort)
@@ -23,7 +25,6 @@ void Node::setNetParams(const QString &ipAddr, quint16 broadcastPort, quint16 di
     m_broadPort = broadcastPort;
     m_broadSock.bind(m_ipAddress, m_broadPort);
     m_directPort = directPort;
-    m_directSock.bind(m_ipAddress, m_directPort);
 }
 
 void Node::sendBroadcastDatagram(const QByteArray &datagram)
@@ -53,57 +54,82 @@ void Node::readBroadcastDatagram()
 void Node::requestSynchronization()
 {
     QByteArray datagram;
-    datagram.append(REQSYN);
+    datagram.append(REQSYN.data());
     datagram.append(QByteArray::number(blockchain.size()));
     sendBroadcastDatagram(datagram);
 }
 
-void Node::anonce(const Block &block)
+void Node::anonce(const Block block)
 {
     QByteArray datagram;
-    datagram.append(ANONCE);
+    datagram.append(ANONCE.data());
     datagram.append(block.toByteArray());
     sendBroadcastDatagram(datagram);
 }
+
 void Node::processRequest(const QByteArray &datagram, const QHostAddress &sender)
 {
     QByteArray msgType = datagram.mid(0, MSG_TYPE_SIZE);
     //если пришел анонс - то добавляем блок в блокчейн
-    if (msgType.compare(ANONCE) == 0)
+    if (msgType == ANONCE)
     {
         const Block block = Block::fromByteArray(datagram.mid(MSG_TYPE_SIZE,datagram.size()));
         blockchain.append(block);
+        QTimer::singleShot(0,this->parent(),SLOT(updateTable()));
     }
     //если кому-то требуется синхронизация - то проверяем длину своей локлаьной цепочки
     //и если локальная цепочка длинее - то отправляем сообщение о готовности синхронизировать
-    else if (msgType.compare(REQSYN) == 0)
+    else if (msgType == REQSYN)
     {
         int remoteBlockchainSize = datagram.mid(MSG_TYPE_SIZE, sizeof (int)).toInt();
         if (blockchain.size() > remoteBlockchainSize)
         {
             QByteArray response;
-            response.append(CANSYN);
+            response.append(CANSYN.data());
             m_broadSock.writeDatagram(response,sender,m_broadPort);
+            //начинаем слушать прямое подключение для синхронизации
+            m_srv.listen(m_ipAddress, DEFAULT_SRV_PORT);
         }
+
     }
     //если пришло сообщение, что кто-то готов синхронизировать наш узел
     //то создаем tcp соединение с этим узлом
-    else if (msgType.compare(CANSYN) == 0)
+    else if (msgType == CANSYN)
     {
-        m_directSock.connectToHost(sender, m_directPort);
+        connect(&m_directSock, SIGNAL(binaryMessageReceived(const QByteArray)),
+                this, SLOT(readDirectMessage(const QByteArray)));
+        QString strUrl = "ws://"+sender.toString()+":"+QString::number(DEFAULT_SRV_PORT);
+        m_directSock.open(QUrl(strUrl));
+
     }
 }
 
-void Node::readDirectDatagram()
+void Node::onNewConnection()
 {
-    QByteArray datagram = m_directSock.readAll();
-    if (datagram.mid(0,MSG_TYPE_SIZE).compare(SYNFIN) == 0)
+       QWebSocket *synConnection = m_srv.nextPendingConnection();
+       synchronize(synConnection);
+}
+
+void Node::synchronize(QWebSocket *synConnection)
+{
+    for (int blockIndex = 1; blockIndex <= blockchain.size(); ++blockIndex)
     {
-        m_directSock.disconnectFromHost();
+        synConnection->sendBinaryMessage(blockchain.blockAt(blockIndex).toByteArray());
+    }
+    synConnection->sendBinaryMessage(SYNFIN);
+}
+
+
+void Node::readDirectMessage(const QByteArray message)
+{
+    if (message == SYNFIN)
+    {
+        m_directSock.close();
     }
     else
     {
-        const Block block = Block::fromByteArray(datagram);
+        const Block block = Block::fromByteArray(message);
         blockchain.append(block);
+        QTimer::singleShot(0,this->parent(),SLOT(updateTable()));
     }
 }

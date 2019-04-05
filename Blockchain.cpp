@@ -11,7 +11,8 @@ Blockchain::Blockchain(Block genericBlock)
         genericBlock.setData("Hello im first block");
         genericBlock.setPrevHash(QByteArray());//Эквивалент нулю
 
-        append(genericBlock);
+        m_blockChain.insert(genericBlock.index(),genericBlock);
+        m_lastIndex = genericBlock.index();
     }
     else//Случай когда используем создание не с нулевого блока
     {
@@ -45,21 +46,6 @@ QByteArray Blockchain::lastBlockHash() const
     return m_blockChain.value(m_lastIndex).hash();
 }
 
-QByteArray Blockchain::lastBlockPrevHash() const
-{
-    return m_blockChain.value(m_lastIndex).prevHash();
-}
-
-int Blockchain::lastBlockNonce() const
-{
-    return m_blockChain.value(m_lastIndex).nonce();
-}
-
-QVariant Blockchain::lastBlockData() const
-{
-    return m_blockChain.value(m_lastIndex).data();
-}
-
 Block Blockchain::lastBlock() const
 {
     return m_blockChain.value(m_lastIndex);
@@ -79,10 +65,9 @@ void Blockchain::append(const Block &block)
         if (lastBlockHash() == block.prevHash())
         {
           m_blockChain.insert(block.index(),block);
+          m_lastIndex = block.index();
         }
-
     }
-    m_lastIndex = block.index();
 }
 
 void Blockchain::setDifficulty(int difficulty)
